@@ -1,0 +1,244 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "API - Plataforma de Cursos Online",
+    "description": "API RESTful para gerenciamento de usuários e cursos na plataforma de cursos online.",
+    "version": "1.0.0"
+  },
+  "host": "localhost:3000",
+  "basePath": "/",
+  "schemes": ["http"],
+  "paths": {
+    "/usuarios": {
+      "post": {
+        "summary": "Cadastrar um novo usuário",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "nome": { "type": "string" },
+                "email": { "type": "string" },
+                "senha": { "type": "string" },
+                "tipo_usuario": {
+                  "type": "string",
+                  "enum": ["aluno", "instrutor"]
+                }
+              },
+              "required": ["nome", "email", "senha", "tipo_usuario"]
+            }
+          }
+        ],
+        "responses": {
+          "200": { "description": "Usuário criado com sucesso" },
+          "500": { "description": "Erro no servidor" }
+        }
+      },
+      "get": {
+        "summary": "Listar todos os usuários",
+        "responses": {
+          "200": {
+            "description": "Lista de usuários",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/Usuario"
+              }
+            }
+          },
+          "500": { "description": "Erro no servidor" }
+        }
+      }
+    },
+    "/cursos": {
+      "post": {
+        "summary": "Criar um novo curso",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "titulo": { "type": "string" },
+                "descricao": { "type": "string" },
+                "id_instrutor": { "type": "integer" }
+              },
+              "required": ["titulo", "descricao", "id_instrutor"]
+            }
+          }
+        ],
+        "responses": {
+          "200": { "description": "Curso criado com sucesso" },
+          "500": { "description": "Erro no servidor" }
+        }
+      },
+      "get": {
+        "summary": "Listar todos os cursos",
+        "responses": {
+          "200": {
+            "description": "Lista de cursos",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/Curso"
+              }
+            }
+          },
+          "500": { "description": "Erro no servidor" }
+        }
+      }
+    },
+    "/usuarios/{id}": {
+      "get": {
+        "summary": "Buscar usuário por ID",
+        "parameters": [
+          { "name": "id", "in": "path", "required": true, "type": "integer" }
+        ],
+        "responses": { "200": { "description": "Usuário encontrado", "schema": { "$ref": "#/definitions/Usuario" } }, "404": { "description": "Usuário não encontrado" } }
+      },
+      "put": {
+        "summary": "Atualizar usuário",
+        "parameters": [
+          { "name": "id", "in": "path", "required": true, "type": "integer" },
+          { "name": "body", "in": "body", "required": true, "schema": { "$ref": "#/definitions/Usuario" } }
+        ],
+        "responses": { "200": { "description": "Usuário atualizado" }, "404": { "description": "Usuário não encontrado" } }
+      },
+      "delete": {
+        "summary": "Deletar usuário",
+        "parameters": [
+          { "name": "id", "in": "path", "required": true, "type": "integer" }
+        ],
+        "responses": { "204": { "description": "Usuário deletado" }, "404": { "description": "Usuário não encontrado" } }
+      }
+    },
+    "/cursos/{id}": {
+      "get": {
+        "summary": "Buscar curso por ID",
+        "parameters": [
+          { "name": "id", "in": "path", "required": true, "type": "integer" }
+        ],
+        "responses": { "200": { "description": "Curso encontrado", "schema": { "$ref": "#/definitions/Curso" } }, "404": { "description": "Curso não encontrado" } }
+      }
+    },
+    "/modulos": {
+      "post": {
+        "summary": "Criar módulo",
+        "parameters": [
+          { "name": "body", "in": "body", "required": true, "schema": { "type": "object", "properties": { "titulo": { "type": "string" }, "conteudo": { "type": "string" }, "cursoId": { "type": "integer" } }, "required": ["titulo", "cursoId"] } }
+        ],
+        "responses": { "201": { "description": "Módulo criado" }, "500": { "description": "Erro no servidor" } }
+      },
+      "get": {
+        "summary": "Listar módulos",
+        "responses": { "200": { "description": "Lista de módulos", "schema": { "type": "array", "items": { "$ref": "#/definitions/Modulo" } } }, "500": { "description": "Erro no servidor" } }
+      }
+    },
+    "/inscricoes": {
+      "post": {
+        "summary": "Inscrever aluno em curso",
+        "parameters": [
+          { "name": "body", "in": "body", "required": true, "schema": { "type": "object", "properties": { "usuarioId": { "type": "integer" }, "cursoId": { "type": "integer" } }, "required": ["usuarioId", "cursoId"] } }
+        ],
+        "responses": { "201": { "description": "Inscrição criada" }, "500": { "description": "Erro no servidor" } }
+      },
+      "get": {
+        "summary": "Listar inscrições",
+        "responses": { "200": { "description": "Lista de inscrições", "schema": { "type": "array", "items": { "$ref": "#/definitions/Inscricao" } } }, "500": { "description": "Erro no servidor" } }
+      }
+    },
+    "/progresso": {
+      "post": {
+        "summary": "Registrar progresso do aluno",
+        "parameters": [
+          { "name": "body", "in": "body", "required": true, "schema": { "type": "object", "properties": { "usuarioId": { "type": "integer" }, "moduloId": { "type": "integer" }, "status": { "type": "string" } }, "required": ["usuarioId", "moduloId"] } }
+        ],
+        "responses": { "201": { "description": "Progresso registrado" }, "500": { "description": "Erro no servidor" } }
+      },
+      "get": {
+        "summary": "Listar progresso do aluno",
+        "responses": { "200": { "description": "Lista de progresso", "schema": { "type": "array", "items": { "$ref": "#/definitions/Progresso" } } }, "500": { "description": "Erro no servidor" } }
+      }
+    },
+    "/mensagens": {
+      "post": {
+        "summary": "Criar mensagem",
+        "parameters": [
+          { "name": "body", "in": "body", "required": true, "schema": { "type": "object", "properties": { "usuarioId": { "type": "integer" }, "cursoId": { "type": "integer" }, "texto": { "type": "string" } }, "required": ["usuarioId", "cursoId", "texto"] } }
+        ],
+        "responses": { "201": { "description": "Mensagem criada" }, "500": { "description": "Erro no servidor" } }
+      },
+      "get": {
+        "summary": "Listar mensagens",
+        "responses": { "200": { "description": "Lista de mensagens", "schema": { "type": "array", "items": { "$ref": "#/definitions/Mensagem" } } }, "500": { "description": "Erro no servidor" } }
+      }
+    },
+    "/admin/usuarios": {
+      "get": {
+        "summary": "Listar todos os usuários (admin)",
+        "responses": { "200": { "description": "Lista de usuários", "schema": { "type": "array", "items": { "$ref": "#/definitions/Usuario" } } }, "403": { "description": "Acesso restrito a administradores" } }
+      }
+    }
+  },
+  "definitions": {
+    "Usuario": {
+      "type": "object",
+      "properties": {
+        "id": { "type": "integer" },
+        "nome": { "type": "string" },
+        "email": { "type": "string" },
+        "tipo_usuario": { "type": "string" }
+      }
+    },
+    "Curso": {
+      "type": "object",
+      "properties": {
+        "id": { "type": "integer" },
+        "titulo": { "type": "string" },
+        "descricao": { "type": "string" },
+        "id_instrutor": { "type": "integer" }
+      }
+    },
+    "Modulo": {
+      "type": "object",
+      "properties": {
+        "id": { "type": "integer" },
+        "titulo": { "type": "string" },
+        "conteudo": { "type": "string" },
+        "cursoId": { "type": "integer" }
+      }
+    },
+    "Inscricao": {
+      "type": "object",
+      "properties": {
+        "id": { "type": "integer" },
+        "usuarioId": { "type": "integer" },
+        "cursoId": { "type": "integer" }
+      }
+    },
+    "Progresso": {
+      "type": "object",
+      "properties": {
+        "id": { "type": "integer" },
+        "usuarioId": { "type": "integer" },
+        "moduloId": { "type": "integer" },
+        "status": { "type": "string" }
+      }
+    },
+    "Mensagem": {
+      "type": "object",
+      "properties": {
+        "id": { "type": "integer" },
+        "usuarioId": { "type": "integer" },
+        "cursoId": { "type": "integer" },
+        "texto": { "type": "string" },
+        "data": { "type": "string", "format": "date-time" }
+      }
+    }
+  }
+}
